@@ -78,26 +78,80 @@ function Invoke-ThrowPermissionsException
 
     Write-Host -ForegroundColor Yellow $script:SqlServerPermissionsString
     Write-Host -ForegroundColor Yellow "Example Usage:"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{`"Include`" = @(`"ALDB`",`"ALSS`")}"
+    Write-Host -ForegroundColor Yellow "  -IncludePermissions @(`"ALDB`",`"ALSS`")"
     Write-Host -ForegroundColor Yellow "    or"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{`"Exclude`" = @(`"CO`",`"COSQ`",`"VW`"}"
+    Write-Host -ForegroundColor Yellow "  -ExcludePermissions @(`"CO`",`"COSQ`",`"VW`")"
     Write-Host -ForegroundColor Yellow "    or (to turn it off)"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{}"
+    Write-Host -ForegroundColor Yellow "  -ExcludePermissions @()"
     throw $Message
 }
 
+<#
+.SYNOPSIS
+Discover privileged accounts in a SQL Server database.
+
+.DESCRIPTION
+This cmdlet may be used to discover privileged accounts in a SQL Server database.  When
+called without arguments, the default behavior is to find local accounts that have been
+added to any of the built-in roles (sysadmin, securityadmin, serveradmin, setupadmin,
+processadmin, diskadmin, dbcreator, bulkadmin) and any local accounts that have been
+granted any permissions other than CO, COSQ, VW, VWAD, VWDB, VWSS.  The caller can
+override this behavior by specifying the exact list of roles to look for.  The caller
+can also specify which directly granted permissions to exclude or include.
+
+When a credential is not supplied to this cmdlet, it will automatically look for an open
+access request with a matching asset name or network address and use that access request
+to get the password to run the discovery.  If no access request is found, the cmdlet
+will prompt for an account name and password to use.
+
+.PARAMETER NetworkAddress
+IP address or hostname of a SQL Server database.
+
+.PARAMETER Credential
+A PowerShell credential object that can be used to connect to the database server to
+execute the discovery job.
+
+.PARAMETER Roles
+A list of roles to search for to identify privileged accounts, or set to @() to turn off role search.
+See https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/server-level-roles?view=sql-server-ver15
+
+.PARAMETER ExcludePermissions
+A list of permissions to exclude when searching for privileged accounts, or set to @() to turn off permission search.
+See https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-server-permissions-transact-sql?view=sql-server-ver15
+
+.PARAMETER IncludePermissions
+A list of permissions to include when searching for privileged accounts.
+See https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-server-permissions-transact-sql?view=sql-server-ver15
+
+.INPUTS
+None.
+
+.OUTPUTS
+System.Management.Automation.PSObject.
+
+.EXAMPLE
+Get-SgDiscSqlServerAccount mssql.test.env
+
+.EXAMPLE
+Get-SgDiscSqlServerAccount mssql.test.env -Credential (Get-Credential)
+
+.EXAMPLE
+Get-SgDiscSqlServerAccount mssql.test.env -Roles sysadmin,securityadmin,serveradmin -IncludePermissions AL,TO,SHDN
+#>
 function Get-SgDiscSqlServerAccount
 {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName="ExcludePerms")]
     param (
         [Parameter(Mandatory=$true,Position=0)]
         [string]$NetworkAddress,
         [Parameter(Mandatory=$false)]
         [PSCredential]$Credential = $null,
         [Parameter(Mandatory=$false)]
-        [string[]]$Roles = ("sysadmin","securityadmin","serveradmin","setupadmin","processadmin","diskadmin","dbcreator","bulkadmin"),
-        [Parameter(Mandatory=$false)]
-        [hashtable]$ExplicitPermissions = @{"Exclude" = @("CO","COSQ","VW","VWAD","VWDB","VWSS")}
+        [string[]]$Roles = @("sysadmin","securityadmin","serveradmin","setupadmin","processadmin","diskadmin","dbcreator","bulkadmin"),
+        [Parameter(Mandatory=$false,ParameterSetName="ExcludePerms")]
+        [string[]]$ExcludePermissions = @("CO","COSQ","VW","VWAD","VWDB","VWSS"),
+        [Parameter(Mandatory=$false,ParameterSetName="IncludePerms")]
+        [string[]]$IncludePermissions
     )
 
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
@@ -117,17 +171,12 @@ function Get-SgDiscSqlServerAccount
     }
 
     # handle explicit permissions
-    if ($ExplicitPermissions -and ($ExplicitPermissions.Include -or $ExplicitPermissions.Exclude))
+    if (($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions) -or ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions))
     {
-        # extended parameter validation
-        if ($ExplicitPermissions.Include -and $ExplicitPermissions.Exclude)
-        {
-            Invoke-ThrowPermissionsException "You must specify permissions to include or permissions to exclude permissions not both"
-        }
-        if ($ExplicitPermissions.Include)
+        if ($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions)
         {
             $local:PermInclusions = @()
-            foreach ($local:Perm in $ExplicitPermissions.Include)
+            foreach ($local:Perm in $IncludePermissions)
             {
                 if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
                 {
@@ -137,10 +186,10 @@ function Get-SgDiscSqlServerAccount
             }
             $local:Sql = ($script:SqlExplicitGrantsWithInclusions -f ($local:PermInclusions -join ","))
         }
-        if ($ExplicitPermissions.Exclude)
+        elseif ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions)
         {
             $local:PermExclusions = @()
-            foreach ($local:Perm in $ExplicitPermissions.Exclude)
+            foreach ($local:Perm in $ExcludePermissions)
             {
                 if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
                 {
@@ -156,11 +205,6 @@ function Get-SgDiscSqlServerAccount
     }
     else
     {
-        if ($ExplicitPermissions.Keys.Count -gt 0)
-        {
-            Invoke-ThrowPermissionsException "Invalid key found in ExplicitPermissions parameter"
-        }
-        Write-Verbose "No permission inclusions or permission exclusions found, continuing"
         $local:PrivilegedAccountsFromPermissions = @()
     }
 

@@ -78,11 +78,11 @@ function Invoke-ThrowPermissionsException
 
     Write-Host -ForegroundColor Yellow $script:SqlServerPermissionsString
     Write-Host -ForegroundColor Yellow "Example Usage:"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{`"Include`" = @(`"ALDB`",`"ALSS`")}"
+    Write-Host -ForegroundColor Yellow "  -IncludePermissions @(`"ALDB`",`"ALSS`")"
     Write-Host -ForegroundColor Yellow "    or"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{`"Exclude`" = @(`"CO`",`"COSQ`",`"VW`"}"
+    Write-Host -ForegroundColor Yellow "  -ExcludePermissions @(`"CO`",`"COSQ`",`"VW`")"
     Write-Host -ForegroundColor Yellow "    or (to turn it off)"
-    Write-Host -ForegroundColor Yellow "  -ExplicitPermissions @{}"
+    Write-Host -ForegroundColor Yellow "  -ExcludePermissions @()"
     throw $Message
 }
 
@@ -112,12 +112,12 @@ A PowerShell credential object that can be used to connect to the database serve
 execute the discovery job.
 
 .PARAMETER Roles
-A list of roles to search for to identify privileged accounts.
+A list of roles to search for to identify privileged accounts, or set to @() to turn off role search.
 See https://docs.microsoft.com/en-us/sql/relational-databases/security/authentication-access/server-level-roles?view=sql-server-ver15
 
 .PARAMETER ExcludePermissions
-A list of permissions to exclude when searching for privileged accounts.
-
+A list of permissions to exclude when searching for privileged accounts, or set to @() to turn off permission search.
+See https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-views/sys-server-permissions-transact-sql?view=sql-server-ver15
 
 .PARAMETER IncludePermissions
 A list of permissions to include when searching for privileged accounts.
@@ -127,7 +127,7 @@ See https://docs.microsoft.com/en-us/sql/relational-databases/system-catalog-vie
 None.
 
 .OUTPUTS
-JSON response from Safeguard Web API.
+System.Management.Automation.PSObject.
 
 .EXAMPLE
 Get-SgDiscSqlServerAccount mssql.test.env
@@ -150,7 +150,7 @@ function Get-SgDiscSqlServerAccount
         [string[]]$Roles = @("sysadmin","securityadmin","serveradmin","setupadmin","processadmin","diskadmin","dbcreator","bulkadmin"),
         [Parameter(Mandatory=$false,ParameterSetName="ExcludePerms")]
         [string[]]$ExcludePermissions = @("CO","COSQ","VW","VWAD","VWDB","VWSS"),
-        [Parameter(Mandatory=$false,ParameterSetName="ExcludePerms")]
+        [Parameter(Mandatory=$false,ParameterSetName="IncludePerms")]
         [string[]]$IncludePermissions
     )
 
@@ -171,9 +171,9 @@ function Get-SgDiscSqlServerAccount
     }
 
     # handle explicit permissions
-    if ($IncludePermissions -or $ExcludePermissions)
+    if (($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions) -or ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions))
     {
-        if ($IncludePermissions)
+        if ($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions)
         {
             $local:PermInclusions = @()
             foreach ($local:Perm in $IncludePermissions)
@@ -186,7 +186,7 @@ function Get-SgDiscSqlServerAccount
             }
             $local:Sql = ($script:SqlExplicitGrantsWithInclusions -f ($local:PermInclusions -join ","))
         }
-        if ($ExcludePermissions)
+        elseif ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions)
         {
             $local:PermExclusions = @()
             foreach ($local:Perm in $ExcludePermissions)

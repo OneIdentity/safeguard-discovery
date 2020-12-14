@@ -167,7 +167,7 @@ function Get-SgDiscSqlServerAccount
     if (-not (Get-Module InvokeQuery)) { Import-Module InvokeQuery }
     if (-not (Get-Module InvokeQuery))
     {
-        throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please using Install-Module to install InvokeQuery."
+        throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please run: Install-Module InvokeQuery."
     }
 
     # handle explicit permissions
@@ -201,7 +201,7 @@ function Get-SgDiscSqlServerAccount
         }
 
         # query to find matching permissions (this is filtered to local accounts)
-        $local:PrivilegedAccountsFromPermissions = (Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
+        $local:PrivilegedAccountsFromPermissions = @(Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
     }
     else
     {
@@ -219,7 +219,7 @@ function Get-SgDiscSqlServerAccount
         $local:Sql = ($script:SqlExplicitRoleMembersWithInclusions -f ($local:RoleInclusions -join ","))
 
         # query to find matching role memberships (this is filtered to local accounts)
-        $local:PrivilegedAccountsFromRoles = (Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
+        $local:PrivilegedAccountsFromRoles = @(Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
     }
     else
     {

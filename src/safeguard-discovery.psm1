@@ -147,20 +147,28 @@ function Import-SgDiscDiscoveredAccount
             }
             else
             {
+                if ($_.Description)
+                {
+                    $local:Description = $_.Description
+                }
+                else
+                {
+                    $local:Description = "safeguard-discovery -- no additional information"
+                }
                 if ($_.DomainName)
                 {
                     $local:Account = (New-SafeguardAssetAccount $local:Assets[0].Id -NewAccountName $_.AccountName -DomainName $_.DomainName `
-                                        -Description "Account discovered by safeguard-discovery PowerShell module")
+                                        -Description $local:Description)
                 }
                 elseif ($_.DistinguishedName)
                 {
                     $local:Account = (New-SafeguardAssetAccount $local:Assets[0].Id -NewAccountName $_.AccountName -DistinguishedName $_.DistinguishedName `
-                                        -Description "Account discovered by safeguard-discovery PowerShell module")
+                                        -Description $local:Description)
                 }
                 else
                 {
                     $local:Account = (New-SafeguardAssetAccount $local:Assets[0].Id -NewAccountName $_.AccountName `
-                                        -Description "Account discovered by safeguard-discovery PowerShell module")
+                                        -Description $local:Description)
                 }
                 New-Object PSObject -Property ([ordered]@{
                     AssetId = $local:Account.AssetId;

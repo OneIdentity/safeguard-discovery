@@ -201,7 +201,7 @@ function Get-SgDiscSqlServerAccount
         }
 
         # query to find matching permissions (this is filtered to local accounts)
-        $local:PrivilegedAccountsFromPermissions = @(Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
+        $local:PrivilegedAccountsFromPermissions = (Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
     }
     else
     {
@@ -219,7 +219,7 @@ function Get-SgDiscSqlServerAccount
         $local:Sql = ($script:SqlExplicitRoleMembersWithInclusions -f ($local:RoleInclusions -join ","))
 
         # query to find matching role memberships (this is filtered to local accounts)
-        $local:PrivilegedAccountsFromRoles = @(Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
+        $local:PrivilegedAccountsFromRoles = (Invoke-SqlServerQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
     }
     else
     {
@@ -234,8 +234,8 @@ function Get-SgDiscSqlServerAccount
             $local:Results[$_.Id].Permissions += (New-Object PSObject -Property ([ordered]@{
                 PermissionName = $_.PermissionName;
                 PermissionDescription = $_.PermissionDescription;
-                PermissionClass = $_PermissionClass;
-                PermissionState = $_PermissionState
+                PermissionClass = $_.PermissionClass;
+                PermissionState = $_.PermissionState
             }))
         }
         else
@@ -247,9 +247,10 @@ function Get-SgDiscSqlServerAccount
                 Permissions = @(New-Object PSObject -Property ([ordered]@{
                     PermissionName = $_.PermissionName;
                     PermissionDescription = $_.PermissionDescription;
-                    PermissionClass = $_PermissionClass;
-                    PermissionState = $_PermissionState
-                }))
+                    PermissionClass = $_.PermissionClass;
+                    PermissionState = $_.PermissionState
+                }));
+                Description = ""
             })
         }
     }
@@ -265,10 +266,22 @@ function Get-SgDiscSqlServerAccount
                 DefaultDatabaseName = $_.DefaultDatabaseName;
                 Roles = @($_.RoleName);
                 Permissions = @();
+                Description = ""
             })
         }
     }
 
-    # convert results to an array
-    $local:Results.Values | ForEach-Object { $_ }
+    # convert results to an array and add the description
+    $local:Results.Values | ForEach-Object {
+        $_.Description = "safeguard-discovery --"
+        if ($_.Roles)
+        {
+            $_.Description += " roles:" + ($_.Roles -join ",")
+        }
+        if ($_.Permissions)
+        {
+            $_.Description += " permissions:" + ($_.Permissions.PermissionName -join ",")
+        }
+        $_
+    }
 }

@@ -70,7 +70,10 @@ NestedModules = @(
     # Main = safeguard-discovery.psm1
      # Internal Only
      # Public Modules
-     'sqlserver.psm1'
+     'sqlserver.psm1',
+     'mysql.psm1',
+     'postgres.psm1',
+     'oracle.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -81,9 +84,15 @@ FunctionsToExport = @(
     # platform-specific modules
     # sqlserver.psm1
     'Get-SgDiscSqlServerAccount'
+    
     # mysql.psm1
-    # postgres.psm1
+    'Get-SgDiscMysqlAccount'  
+    
+    # postgres.psm1  
+    'Get-SgDiscPostgresAccount'
+    
     # oracle.psm1
+    'Get-SgDiscOracleAccount'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

@@ -73,7 +73,8 @@ NestedModules = @(
      'sqlserver.psm1',
      'mysql.psm1',
      'postgres.psm1',
-     'oracle.psm1'
+     'oracle.psm1',
+     'idrac.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -93,6 +94,9 @@ FunctionsToExport = @(
     
     # oracle.psm1
     'Get-SgDiscOracleAccount'
+    
+    # idrac.psm1
+    'Get-SgDiscIDracAccount'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

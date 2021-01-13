@@ -14,7 +14,7 @@ WHERE "
 $script:SqlExplicitGrantsWithInclusions = $script:AllSqlExplicitGrants + "sp.Privilege IN ({0})"
 $script:SqlExplicitGrantsWithExclusions = $script:AllSqlExplicitGrants + "sp.Privilege NOT IN ({0})"
 
-$script:SqlServerPermissionsMap = @{
+$script:OraclePermissionsMap = @{
     "DEQUEUE ANY QUEUE" = "DEQUEUE ANY QUEUE"
     "MANAGE ANY QUEUE" = "MANAGE ANY QUEUE"
     "CREATE ANY EVALUATION CONTEXT" = "CREATE ANY EVALUATION CONTEXT"
@@ -60,7 +60,7 @@ $script:SqlServerPermissionsMap = @{
     "DROP ANY RULE" = "DROP ANY RULE"
     "CREATE MATERIALIZED VIEW" = "CREATE MATERIALIZED VIEW"
 }
-$script:SqlServerPermissionsString = ($script:SqlServerPermissionsMap | Out-String)
+$script:OraclePermissionsString = ($script:OraclePermissionsMap | Out-String)
 
 function Invoke-ThrowPermissionsException
 {
@@ -73,7 +73,7 @@ function Invoke-ThrowPermissionsException
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
     if (-not $PSBoundParameters.ContainsKey("Verbose")) { $VerbosePreference = $PSCmdlet.GetVariableValue("VerbosePreference") }
 
-    Write-Host -ForegroundColor Yellow $script:SqlServerPermissionsString
+    Write-Host -ForegroundColor Yellow $script:OraclePermissionsString
     Write-Host -ForegroundColor Yellow "Example Usage:"
     Write-Host -ForegroundColor Yellow "  -IncludePermissions @(`"INSERT ANY TABLE`",`"DROP ANY RULE`")"
     Write-Host -ForegroundColor Yellow "    or"
@@ -129,13 +129,13 @@ None.
 System.Management.Automation.PSObject.
 
 .EXAMPLE
-Get-SgDiscSqlServerAccount oracle.test.env
+Get-SgDiscOracleAccount oracle.test.env
 
 .EXAMPLE
-Get-SgDiscSqlServerAccount oracle.test.env -Credential (Get-Credential)
+Get-SgDiscOracleAccount oracle.test.env -Credential (Get-Credential)
 
 .EXAMPLE
-Get-SgDiscSqlServerAccount oracle.test.env -Roles DBA,CAPTURE_ADMIN,DV_SECANALYST -IncludePermissions CREATE TABLE,MANAGE ANY QUEUE,DEQUEUE ANY QUEUE
+Get-SgDiscOracleAccount oracle.test.env -Roles DBA,CAPTURE_ADMIN,DV_SECANALYST -IncludePermissions CREATE TABLE,MANAGE ANY QUEUE,DEQUEUE ANY QUEUE
 #>
 function Get-SgDiscOracleAccount
 {

@@ -76,7 +76,8 @@ NestedModules = @(
      'oracle.psm1',
      'idrac.psm1',
      'hpilo.psm1',
-     'esx.psm1'
+     'esx.psm1',
+     'servicenow.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -105,6 +106,9 @@ FunctionsToExport = @(
     
     # Esx.psm1
     'Get-SgDiscEsxAsset'
+    
+    # ServiceNow.psm1
+    'Get-SgDiscServiceNowAsset'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

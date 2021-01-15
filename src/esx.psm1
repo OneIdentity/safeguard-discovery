@@ -11,7 +11,7 @@ to get the password to run the discovery.  If no access request is found, the cm
 will prompt for an Asset name and password to use.
 
 .PARAMETER NetworkAddress
-IP address or hostname of a SQL Server database.
+IP address or hostname of a Esx database.
 
 .PARAMETER Credential
 A PowerShell credential object that can be used to connect to the database server to
@@ -24,10 +24,10 @@ None.
 System.Management.Automation.PSObject.
 
 .EXAMPLE
-Get-SgDiscEsxAsset mssql.test.env
+Get-SgDiscEsxAsset esx.test.env
 
 .EXAMPLE
-Get-SgDiscEsxAsset mssql.test.env -Credential (Get-Credential)
+Get-SgDiscEsxAsset esx.test.env -Credential (Get-Credential)
 #>
 function Get-SgDiscEsxAsset
 {

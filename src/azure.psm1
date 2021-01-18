@@ -10,8 +10,12 @@ access request with a matching asset name or network address and use that access
 to get the password to run the discovery.  If no access request is found, the cmdlet
 will prompt for an Asset name and password to use.
 
-.PARAMETER SubscriptionId
-Azure subscription to search
+.PARAMETER NetworkAddress
+IP address or hostname of a ServiceNow database.
+
+.PARAMETER Credential
+A PowerShell credential object that can be used to connect to the server to
+execute the discovery job.
 
 .INPUTS
 None.

@@ -31,7 +31,7 @@ Get-SgDiscServiceNowAsset servicenow.test.env -Credential (Get-Credential)
 #>
 function Get-SgDiscServiceNowAsset
 {
-    [CmdletBinding(DefaultParameterSetName="ExcludePerms")]
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory=$true,Position=0)]
         [string]$NetworkAddress,

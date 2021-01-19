@@ -79,7 +79,8 @@ NestedModules = @(
      'esx.psm1',
      'servicenow.psm1',
      'azure.psm1',
-     'hyperv.psm1'
+     'hyperv.psm1',
+     'aws.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -117,6 +118,9 @@ FunctionsToExport = @(
     
     # Hyper-v.psm1
     'Get-SgDiscHypervAsset'
+    
+    # Hyper-v.psm1
+    'Get-SgDiscAwsAsset'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

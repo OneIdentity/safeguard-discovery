@@ -52,12 +52,14 @@ jobs:
       filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(System.DefaultWorkingDirectory)\safeguard-discovery'
-      artifactName: 'SafeguardDiscoveryModule'
-    displayName: 'Publishing the artifacts'
+    
+    
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)\safeguard-discovery'
+        includeRootFolder: true 
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
 
   - task: GitHubRelease@1
     inputs:
@@ -72,8 +74,7 @@ jobs:
       changeLogCompareToRelease: 'lastFullRelease'
       changeLogType: 'commitBased'
       assets: |
-        $(System.DefaultWorkingDirectory)\safeguard-discovery\$(VersionString)\*.psm1
-        $(System.DefaultWorkingDirectory)\safeguard-discovery\$(VersionString)\*.psd1
+        '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     displayName: 'Creating and publishing a release to Github'
     condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 

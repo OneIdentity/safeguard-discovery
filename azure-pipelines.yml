@@ -53,6 +53,29 @@ jobs:
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
 
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(System.DefaultWorkingDirectory)\safeguard-discovery'
+      artifactName: 'SafeguardDiscoveryModule'
+    displayName: 'Publishing the artifacts'
+
+  - task: GitHubRelease@1
+    inputs:
+      gitHubConnection: 'github.ReleaseServiceAccount'
+      repositoryName: 'OneIdentity/safeguard-discovery'
+      action: 'create'
+      target: '$(Build.SourceVersion)'
+      tagSource: 'userSpecifiedTag'
+      tag: 'release-$(VersionString)'
+      title: '$(VersionString)'
+      isPreRelease: $(isPrerelease)
+      changeLogCompareToRelease: 'lastFullRelease'
+      changeLogType: 'commitBased'
+      assets: |
+        $(System.DefaultWorkingDirectory)\safeguard-discovery
+    displayName: 'Creating and publishing a release to Github'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
+
   - powershell: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags
     displayName: 'Publish Powershell module to Powershell Gallery'
     condition: and(succeeded(), eq(variables.isReleaseBranch, true))

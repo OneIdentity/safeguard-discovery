@@ -47,7 +47,7 @@ jobs:
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
 
-  - powershell: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-devops -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags
+  - powershell: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags
     displayName: 'Publish Powershell module to Powershell Gallery'
     condition: and(succeeded(), eq(variables.isReleaseBranch, true))
     

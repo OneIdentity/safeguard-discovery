@@ -245,11 +245,21 @@ function Import-SgDiscDiscoveredAsset
                 {
                     $local:Description = "safeguard-discovery -- no additional information"
                 }
+
+                if ($_.IpAddress -is [string])
+                {
+                    $local:NetworkAddress = $_.IpAddress
+                }
+                else
+                {
+                    $local:NetworkAddress = $_.AssetName
+                }
                 
-                $local:Asset = (New-SafeguardAssetAccount $local:Assets[0].Id -NewAccountName $_.AccountName -Description $local:Description)
+                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description)
                 New-Object PSObject -Property ([ordered]@{
                     Id = $local:Asset.Id
                     Name = $local:Asset.Name;
+                    NetworkAddress = $local:NetworkAddress
                     AssetPartitionId = $local:AssetPartition.Id;
                 })
             }

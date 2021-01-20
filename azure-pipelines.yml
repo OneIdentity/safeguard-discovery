@@ -52,6 +52,10 @@ jobs:
       filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
+
+  - powershell: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags
+    displayName: 'Publish Powershell module to Powershell Gallery'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
         
   - task: ArchiveFiles@2
     inputs:
@@ -84,9 +88,5 @@ jobs:
       assets: |
         '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     displayName: 'Creating and publishing a release to Github'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
-
-  - powershell: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags
-    displayName: 'Publish Powershell module to Powershell Gallery'
     condition: and(succeeded(), eq(variables.isReleaseBranch, true))
     

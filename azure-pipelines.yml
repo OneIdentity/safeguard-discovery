@@ -25,6 +25,12 @@ jobs:
     vmImage: 'windows-latest'
 
   steps:
+  - task: PowerShell@2
+    inputs:
+      targetType: filePath
+      filePath: $(System.DefaultWorkingDirectory)\versionnumber.ps1
+      arguments: $(Build.SourcesDirectory) $(semanticVersion) $(Build.BuildId)
+    displayName: 'Setting build version'
 
   - task: AzureKeyVault@1
     inputs:

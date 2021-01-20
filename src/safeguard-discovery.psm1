@@ -185,3 +185,76 @@ function Import-SgDiscDiscoveredAccount
     }
     end {}
 }
+
+
+function Import-SgDiscDiscoveredAsset
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$true,Position=0)]
+        [string]$AssetPartition,
+        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [PSObject[]]$DiscoveredAccounts
+    )
+
+    begin {
+        if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
+        if (-not $PSBoundParameters.ContainsKey("Verbose")) { $VerbosePreference = $PSCmdlet.GetVariableValue("VerbosePreference") }
+
+        if (Test-SafeguardSession)
+        {
+            $local:AssetPartitions = @(Get-SafeguardAssetPartition $AssetPartition)
+            if ($local:AssetPartitions.Count -lt 1)
+            {
+                throw "Unable to find an asset partition matching '$AssetPartition'"
+            }
+            elseif ($local:AssetPartitions.Count -gt 1)
+            {
+                throw "Found $($local:AssetPartitions.Count) assets matching '$AssetPartition"
+            }
+        }
+        else
+        {
+            throw "You must connect to Safeguard using safeguard-ps to use this cmdlet, run Connect-Safeguard"
+        }
+    }
+    process {
+        $DiscoveredAssets | ForEach-Object {
+            if (-not $_.AssetName)
+            {
+                Write-Host -ForegroundColor Yellow ($_ | Out-String)
+                throw "Discovered asset has no AssetName field"
+            }
+            try
+            {
+                Write-Verbose "Checking for existence of '$($_.AssetName)'"
+                $local:Asset = (Get-SafeguardAsset $_.AssetName)
+            }
+            catch {}
+            if ($local:Asset)
+            {
+                Write-Host -ForegroundColor Green "Discovered asset '$($_.AssetName)' already exists"
+            }
+            else
+            {
+                if ($_.Description)
+                {
+                    $local:Description = $_.Description
+                }
+                else
+                {
+                    $local:Description = "safeguard-discovery -- no additional information"
+                }
+                
+                $local:Asset = (New-SafeguardAssetAccount $local:Assets[0].Id -NewAccountName $_.AccountName -Description $local:Description)
+                New-Object PSObject -Property ([ordered]@{
+                    Id = $local:Asset.Id
+                    Name = $local:Asset.Name;
+                    AssetPartitionId = $local:AssetPartition.Id;
+                })
+            }
+            $local:Asset = $null
+        }
+    }
+    end {}
+}

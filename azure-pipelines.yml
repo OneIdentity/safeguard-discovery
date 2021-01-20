@@ -62,6 +62,13 @@ jobs:
     displayName: 'Archiving Powershell module'
     condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'SafeguardDiscoveryModule'
+    displayName: 'Publishing the artifacts'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
+
   - task: GitHubRelease@1
     inputs:
       gitHubConnection: 'github.ReleaseServiceAccount'

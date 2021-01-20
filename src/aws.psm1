@@ -30,7 +30,7 @@ System.Management.Automation.PSObject.
 Get-SgDiscAwsAsset Aws.test.env
 
 .EXAMPLE
-Get-SgDiscAwsAsset Aws.test.env -SubscriptionId 30184975-ef2c-43ac-9884-e8ebdb3b5548
+Get-SgDiscAwsAsset Aws.test.env us-west-2 -NetworkAddress SafeguardAWS
 #>
 function Get-SgDiscAwsAsset
 {

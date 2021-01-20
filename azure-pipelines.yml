@@ -43,7 +43,7 @@ jobs:
   - task: PowerShell@2
     inputs:
       targetType: filePath
-      filePath: $(System.DefaultWorkingDirectory)\powershell\install-forpipeline.ps1
+      filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
 

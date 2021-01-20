@@ -52,14 +52,15 @@ jobs:
       filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(Build.SourcesDirectory) $(VersionString) $$(isPrerelease)
     displayName: 'Building Powershell module'
-    
-    
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)\safeguard-discovery'
-        includeRootFolder: true 
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+        
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(System.DefaultWorkingDirectory)\safeguard-discovery'
+      includeRootFolder: true 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    displayName: 'Archiving Powershell module'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 
   - task: GitHubRelease@1
     inputs:

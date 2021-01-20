@@ -70,7 +70,17 @@ NestedModules = @(
     # Main = safeguard-discovery.psm1
      # Internal Only
      # Public Modules
-     'sqlserver.psm1'
+     'sqlserver.psm1',
+     'mysql.psm1',
+     'postgres.psm1',
+     'oracle.psm1',
+     'idrac.psm1',
+     'hpilo.psm1',
+     'esx.psm1',
+     'servicenow.psm1',
+     'azure.psm1',
+     'hyperv.psm1',
+     'aws.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
@@ -81,9 +91,36 @@ FunctionsToExport = @(
     # platform-specific modules
     # sqlserver.psm1
     'Get-SgDiscSqlServerAccount'
+    
     # mysql.psm1
-    # postgres.psm1
+    'Get-SgDiscMysqlAccount'  
+    
+    # postgres.psm1  
+    'Get-SgDiscPostgresAccount'
+    
     # oracle.psm1
+    'Get-SgDiscOracleAccount'
+    
+    # idrac.psm1
+    'Get-SgDiscIDracAccount'
+    
+    # hpilo.psm1
+    'Get-SgDiscHpIloAccount'
+    
+    # Esx.psm1
+    'Get-SgDiscEsxAsset'
+    
+    # ServiceNow.psm1
+    'Get-SgDiscServiceNowAsset'
+    
+    # Azure.psm1
+    'Get-SgDiscAzureAsset'
+    
+    # Hyper-v.psm1
+    'Get-SgDiscHypervAsset'
+    
+    # Hyper-v.psm1
+    'Get-SgDiscAwsAsset'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.

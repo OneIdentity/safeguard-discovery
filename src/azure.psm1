@@ -10,12 +10,8 @@ access request with a matching asset name or network address and use that access
 to get the password to run the discovery.  If no access request is found, the cmdlet
 will prompt for an Asset name and password to use.
 
-.PARAMETER NetworkAddress
-IP address or hostname of a ServiceNow database.
-
-.PARAMETER Credential
-A PowerShell credential object that can be used to connect to the server to
-execute the discovery job.
+.PARAMETER SubscriptionId
+Azure subscription to search
 
 .INPUTS
 None.
@@ -39,7 +35,20 @@ function Get-SgDiscAzureAsset
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
     if (-not $PSBoundParameters.ContainsKey("Verbose")) { $VerbosePreference = $PSCmdlet.GetVariableValue("VerbosePreference") }
 
-    (Connect-AzAccount -Subscription $SubscriptionId) | Out-Null
+    # make sure Az is installed
+    if (-not (Get-Module Az)) 
+    { 
+        try 
+        {
+            Import-Module Az
+        }
+        catch 
+        {
+            throw "Azure Asset discovery in safeguard-discovery requires Az.  Please run: Install-Module Az."
+        }
+    }
+
+    (Connect-AzAccount -Subscription $SubscriptionId) 2> $null
     
     $local:Results = @()
     $local:systems = Get-AzVM 

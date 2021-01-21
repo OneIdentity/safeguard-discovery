@@ -98,10 +98,16 @@ function Get-SgDiscHpiLOAccount
     }
 
     # make sure HPEiLOCmdlets is installed
-    if (-not (Get-Module HPEiLOCmdlets)) { Import-Module HPEiLOCmdlets }
-    if (-not (Get-Module HPEiLOCmdlets))
-    {
-        throw "SQL account discovery in safeguard-discovery requires HPEiLOCmdlets.  Please run: Install-Module HPEiLOCmdlets."
+    if (-not (Get-Module HPEiLOCmdlets)) 
+    { 
+        try 
+        {
+            Import-Module HPEiLOCmdlets
+        }
+        catch 
+        {
+            throw "HP ILO account discovery in safeguard-discovery requires HPEiLOCmdlets.  Please run: Install-Module HPEiLOCmdlets."
+        }
     }
 
     $session = Connect-HPEiLO $NetworkAddress -Credential $Credential -DisableCertificateAuthentication

@@ -54,10 +54,16 @@ function Get-SgDiscAwsAsset
     }
 
     # make sure Awspowershell is installed
-    if (-not (Get-Module Awspowershell)) { Import-Module Awspowershell }
-    if (-not (Get-Module Awspowershell))
-    {
-        throw "AWS Asset discovery in safeguard-discovery requires Awspowershell.  Please run: Install-Module Awspowershell."
+    if (-not (Get-Module Awspowershell)) 
+    { 
+        try 
+        {
+            Import-Module Awspowershell
+        }
+        catch 
+        {
+            throw "AWS Asset discovery in safeguard-discovery requires Awspowershell.  Please run: Install-Module Awspowershell."
+        }
     }
     
     $local:NetworkCredential = $Credential.GetNetworkCredential()

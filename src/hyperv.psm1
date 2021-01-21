@@ -49,10 +49,16 @@ function Get-SgDiscHypervAsset
     }
 
     # make sure Hyper-v is installed
-    if (-not (Get-Module Hyper-v)) { Import-Module Hyper-v }
-    if (-not (Get-Module Hyper-v))
-    {
-        throw "Hyper-v Asset discovery in safeguard-discovery requires Hyper-v.  Please turn on hyper-v powershell cmdlets using Windows feature settings."
+    if (-not (Get-Module Hyper-v)) 
+    { 
+        try 
+        {
+            Import-Module Hyper-v
+        }
+        catch 
+        {
+            throw "Hyper-v Asset discovery in safeguard-discovery requires Hyper-v.  Please turn on hyper-v powershell cmdlets using Windows feature settings."
+        }
     }
     
     $local:Results = @()

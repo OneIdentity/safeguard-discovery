@@ -122,53 +122,54 @@ function Get-SgDiscMysqlAccount
     }
 
     # make sure InvokeQuery is installed
-    if (-not (Get-Module InvokeQuery)) { Import-Module InvokeQuery }
-    if (-not (Get-Module InvokeQuery))
-    {
-        throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please run: Install-Module InvokeQuery."
+    if (-not (Get-Module InvokeQuery)) 
+    { 
+        try 
+        {
+            Import-Module InvokeQuery
+        }
+        catch 
+        {
+            throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please run: Install-Module InvokeQuery."
+        }
     }
 
     # handle explicit permissions
-    if (($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions) -or ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions))
+    if ($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions)
     {
-        if ($PSCmdlet.ParameterSetName -eq "IncludePerms" -and $IncludePermissions)
+        $local:PermInclusions = @()
+        foreach ($local:Perm in $IncludePermissions)
         {
-            $local:PermInclusions = @()
-            foreach ($local:Perm in $IncludePermissions)
+            if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
             {
-                if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
-                {
-                    Invoke-ThrowPermissionsException "Invalid permission inclusion '$($local:Perm)'"
-                }
-                $local:PermInclusions += "'$($local:Perm)'"
+                Invoke-ThrowPermissionsException "Invalid permission inclusion '$($local:Perm)'"
             }
-            $local:Sql = ($script:SqlExplicitGrantsWithInclusions -f ($local:PermInclusions -join " or "))
+            $local:PermInclusions += "'$($local:Perm)'"
         }
-        elseif ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions)
+        $local:Sql = ($script:SqlExplicitGrantsWithInclusions -f ($local:PermInclusions -join " or "))
+    }
+    elseif ($PSCmdlet.ParameterSetName -eq "ExcludePerms" -and $ExcludePermissions)
+    {
+        $local:PermExclusions = @()
+        foreach ($local:Perm in $ExcludePermissions)
         {
-            $local:PermExclusions = @()
-            foreach ($local:Perm in $ExcludePermissions)
+            if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
             {
-                if (-not $script:SqlServerPermissionsMap.ContainsKey($local:Perm))
-                {
-                    Invoke-ThrowPermissionsException "Invalid permission exclusion '$($local:Perm)'"
-                }
-                $local:PermExclusions += "'$($local:Perm)'"
+                Invoke-ThrowPermissionsException "Invalid permission exclusion '$($local:Perm)'"
             }
-            $local:Sql = ($script:SqlExplicitGrantsWithExclusions -f ($local:PermExclusions -join " or not "))
+            $local:PermExclusions += "'$($local:Perm)'"
         }
-        else 
-        {
-            $local:Sql = $script:SqlAllUsers
-        }
+        $local:Sql = ($script:SqlExplicitGrantsWithExclusions -f ($local:PermExclusions -join " or not "))
+    }
+    else 
+    {
+        $local:Sql = $script:SqlAllUsers
+    }
 
-        # query to find matching permissions (this is filtered to local accounts)
-        $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
-    }
-    else
-    {
-        $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $script:SqlAllUsers -Credential $Credential -Server $NetworkAddress)
-    }
+    # query to find matching permissions (this is filtered to local accounts)
+    "Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress"
+    Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress
+    $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
 
     #  process results
     $local:Results = @{}

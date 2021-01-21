@@ -131,10 +131,16 @@ function Get-SgDiscPostgresAccount
     }
     
     # make sure InvokeQuery is installed
-    if (-not (Get-Module InvokeQuery)) { Import-Module InvokeQuery }
-    if (-not (Get-Module InvokeQuery))
-    {
-        throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please run: Install-Module InvokeQuery."
+    if (-not (Get-Module InvokeQuery)) 
+    { 
+        try 
+        {
+            Import-Module InvokeQuery
+        }
+        catch 
+        {
+            throw "SQL account discovery in safeguard-discovery requires InvokeQuery.  Please run: Install-Module InvokeQuery."
+        }
     }
 
     $local:NetworkCredential = $Credential.GetNetworkCredential()

@@ -49,10 +49,16 @@ function Get-SgDiscServiceNowAsset
     }
 
     # make sure ServiceNow is installed
-    if (-not (Get-Module ServiceNow)) { Import-Module ServiceNow }
-    if (-not (Get-Module ServiceNow))
-    {
-        throw "SQL Asset discovery in safeguard-discovery requires ServiceNow.  Please run: Install-Module ServiceNow."
+    if (-not (Get-Module InvokeQuery)) 
+    { 
+        try 
+        {
+            Import-Module ServiceNow
+        }
+        catch 
+        {
+            throw "ServiceNow Asset discovery in safeguard-discovery requires ServiceNow.  Please run: Install-Module ServiceNow."
+        }
     }
 
     if (-not (Set-ServiceNowAuth -url $NetworkAddress  -Credential $Credential))

@@ -49,10 +49,16 @@ function Get-SgDiscEsxAsset
     }
 
     # make sure VMware.VimAutomation.Core is installed
-    if (-not (Get-Module VMware.VimAutomation.Core)) { Import-Module VMware.VimAutomation.Core }
     if (-not (Get-Module VMware.VimAutomation.Core))
-    {
-        throw "SQL Asset discovery in safeguard-discovery requires VMware.VimAutomation.Core.  Please run: Install-Module VMware.VimAutomation.Core."
+    { 
+        try 
+        {
+            Import-Module VMware.VimAutomation.Core
+        }
+        catch 
+        {
+            throw "ESX Asset discovery in safeguard-discovery requires VMware.VimAutomation.Core.  Please run: Install-Module VMware.VimAutomation.Core."
+        }
     }
 
     Set-PowerCLIConfiguration -Confirm:$false -InvalidCertificateAction Ignore

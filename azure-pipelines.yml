@@ -110,7 +110,7 @@ jobs:
       repositoryName: 'OneIdentity/safeguard-discovery'
       action: 'create'
       target: '$(Build.SourceVersion)'
-      tagSource: 'userSpecifiedTag'
+      tagSource: 'manual'
       tag: 'release-$(VersionString)'
       title: '$(VersionString)'
       isPreRelease: $(isPrerelease)

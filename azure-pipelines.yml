@@ -17,7 +17,7 @@ variables:
   semanticVersion: "1.0.0"
   isPrerelease: ${{ true }}
   isReleaseBranch: $[ or( eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-') ) ]
-  shouldDeploy: $[ and( eq( variables.isPrerelease, false ), eq( variables.isReleaseBranch, true ) ) ]
+  shouldDeploy: $[ eq( variables.isReleaseBranch, true ) ]
 
 jobs:
 - job:
@@ -84,7 +84,7 @@ jobs:
     inputs:
       targetType: inline
       failOnStderr: true
-      script: Publish-Module -Path $(Build.SourcesDirectory)\safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags -Force
+      script: Publish-Module safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags -Force
     displayName: 'Publish PowerShell module to PowerShell Gallery'
     condition: and( succeeded(), eq( variables.shouldDeploy, true ) )
         

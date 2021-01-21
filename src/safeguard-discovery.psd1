@@ -85,8 +85,8 @@ NestedModules = @(
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    # safeguard-discovery.psm1 -- handles fetching credentials and importing discovered accounts
-    'Get-SgDiscConnectionCredential','Import-SgDiscDiscoveredAccount',
+    # safeguard-discovery.psm1 -- handles fetching credentials and importing discovered assets/accounts
+    'Get-SgDiscConnectionCredential','Import-SgDiscDiscoveredAccount','Import-SgDiscDiscoveredAsset',
 
     # platform-specific modules
     # sqlserver.psm1

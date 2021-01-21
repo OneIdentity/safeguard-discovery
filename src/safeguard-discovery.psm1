@@ -33,7 +33,7 @@ function Get-SgDiscConnectionCredential
 {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$true,Position=0)]
+        [Parameter(Mandatory=$false)]
         [string]$NetworkAddress,
         [Parameter(Mandatory=$false)]
         [string]$AccountName
@@ -45,6 +45,11 @@ function Get-SgDiscConnectionCredential
     $local:Credential = $null
     if (Test-SafeguardSession)
     {
+        if (-Not $NetworkAddress)
+        {
+            $NetworkAddress = (Read-Host "NetworkAddress")
+        }
+
         if ($AccountName)
         {
             $local:Requests = (Get-SafeguardMyRequest | Where-Object {
@@ -194,7 +199,7 @@ function Import-SgDiscDiscoveredAsset
         [Parameter(Mandatory=$true,Position=0)]
         [string]$AssetPartition,
         [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
-        [PSObject[]]$DiscoveredAccounts
+        [PSObject[]]$DiscoveredAssets
     )
 
     begin {
@@ -254,13 +259,32 @@ function Import-SgDiscDiscoveredAsset
                 {
                     $local:NetworkAddress = $_.AssetName
                 }
+
+                if (-not $_.OperatingSystem)
+                {
+                    $local:Platform = 500 # Other
+                }
+                elseif ($_.OperatingSystem -contains "Windows")
+                {
+                    $local:Platform = 548 # Windows
+                }
+                else
+                {
+                    $local:Platform = 521 # Linux
+                }
+
+                $CredentialType = "None" # No service account
                 
-                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description)
+                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description -Platform $local:Platform -ServiceAccountCredentialType $CredentialType)
                 New-Object PSObject -Property ([ordered]@{
                     Id = $local:Asset.Id
                     Name = $local:Asset.Name;
-                    NetworkAddress = $local:NetworkAddress
-                    AssetPartitionId = $local:AssetPartition.Id;
+                    Description = $local:Asset.Description;
+                    NetworkAddress = $local:Asset.NetworkAddress;
+                    AssetPartitionId = $local:Asset.AssetPartitionId;
+                    AssetPartitionName = $local:Asset.AssetPartitionName;
+                    PlatformId = $local:Asset.PlatformId;
+                    PlatformDisplayName = $local:Asset.PlatformDisplayName;
                 })
             }
             $local:Asset = $null

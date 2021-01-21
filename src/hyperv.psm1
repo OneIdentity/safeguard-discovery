@@ -47,16 +47,23 @@ function Get-SgDiscHypervAsset
         # doing this here allows error action and verbose parameters to propagate
         $Credential = (Get-SgDiscConnectionCredential $NetworkAddress)
     }
+
+    # make sure Hyper-v is installed
+    if (-not (Get-Module Hyper-v)) { Import-Module Hyper-v }
+    if (-not (Get-Module Hyper-v))
+    {
+        throw "Hyper-v Asset discovery in safeguard-discovery requires Hyper-v.  Please turn on hyper-v powershell cmdlets using Windows feature settings."
+    }
     
     $local:Results = @()
-    $local:systems = Hyperv\Get-VM -ComputerName $NetworkAddress -Credential $Credential
+    $local:systems = Hyper-v\Get-VM -ComputerName $NetworkAddress -Credential $Credential
     foreach ($local:system in $local:systems)
     {  
         $local:ipAddress = $null
 
         try 
         {
-            $local:network = Hyperv\Get-VmNetworkAdapter $local:system.Name -ComputerName $NetworkAddress -Credential $Credential
+            $local:network = Hyper-v\Get-VmNetworkAdapter $local:system.Name -ComputerName $NetworkAddress -Credential $Credential
             $local:ipAddress = $local:network.IpAddresses
         }
         catch 

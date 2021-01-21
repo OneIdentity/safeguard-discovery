@@ -90,7 +90,7 @@ jobs:
         
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(Build.SourcesDirectory)\safeguard-discovery'
+      rootFolderOrFile: '$(ModuleDir)\safeguard-discovery'
       includeRootFolder: true 
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'

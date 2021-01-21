@@ -112,7 +112,6 @@ function Get-SgDiscIDracAccount
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
                 Roles = @($_.RoleName);
-                Permissions = @();
                 Description = "";
             })
         }

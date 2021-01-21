@@ -80,8 +80,6 @@ function Get-SgDiscHypervAsset
         $local:Results += New-Object PSObject -Property ([ordered]@{
             AssetName = $local:system.Name;
             State = $local:system.State;
-            OperatingSystem = $null;
-            HostName = $null;
             IpAddress = $local:ipAddress;
             Description = "safeguard-discovery"
         })

@@ -100,8 +100,6 @@ function Get-SgDiscServiceNowAsset
                 AssetName = $local:computer.display_name;
                 State = "$($local:computer.install_status)";
                 OperatingSystem = $local:computer.model.display_value;
-                HostName = $null;
-                IpAddress = $null;
                 Description = "safeguard-discovery"
             })
         }

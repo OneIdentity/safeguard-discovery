@@ -207,9 +207,7 @@ function Get-SgDiscPostgresAccount
     $local:PrivilegedAccountsFromPermissions | ForEach-Object {
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
-                DefaultDatabaseName = "";
                 Roles = @();
-                Permissions = @();
                 Description = "safeguard-discovery --"
             })
         }
@@ -223,9 +221,7 @@ function Get-SgDiscPostgresAccount
         {
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
-                DefaultDatabaseName = "";
                 Roles = @($_.RoleName);
-                Permissions = @();
                 Description = ""
             })
         }

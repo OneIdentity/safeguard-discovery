@@ -1,3 +1,4 @@
+$script:SqlAllUsers = "SELECT u.User AS AccountName FROM mysql.user u"
 $script:SqlExplicitGrantsWithInclusions = "SELECT u.User AS AccountName FROM mysql.user u where {0}"
 $script:SqlExplicitGrantsWithExclusions = "SELECT u.User AS AccountName FROM mysql.user u where not {0}"
 
@@ -59,7 +60,7 @@ Discover privileged accounts in a SQL Server database.
 .DESCRIPTION
 This cmdlet may be used to discover privileged accounts in a Mysql database.  When
 called without arguments, the default behavior is to find local accounts that have that have been
-granted global permissions except Select_priv, Show_db_priv, Show_view_priv.  The caller can
+granted global permissions except Super_priv, Grant_priv.  The caller can
 override this behavior by specifying which directly granted permissions to exclude or include.
 
 When a credential is not supplied to this cmdlet, it will automatically look for an open
@@ -99,7 +100,7 @@ Get-SgDiscMysqlAccount mysql.test.env -IncludePermissions Create_priv,Drop_priv
 #>
 function Get-SgDiscMysqlAccount
 {
-    [CmdletBinding(DefaultParameterSetName="ExcludePerms")]
+    [CmdletBinding(DefaultParameterSetName="IncludePerms")]
     param (
         [Parameter(Mandatory=$true,Position=0)]
         [string]$NetworkAddress,
@@ -156,13 +157,17 @@ function Get-SgDiscMysqlAccount
             }
             $local:Sql = ($script:SqlExplicitGrantsWithExclusions -f ($local:PermExclusions -join " or not "))
         }
+        else 
+        {
+            $local:Sql = $script:SqlAllUsers
+        }
 
         # query to find matching permissions (this is filtered to local accounts)
         $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
     }
     else
     {
-        $local:PrivilegedAccountsFromPermissions = @()
+        $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $script:SqlAllUsers -Credential $Credential -Server $NetworkAddress)
     }
 
     #  process results

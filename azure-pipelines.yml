@@ -17,7 +17,7 @@ variables:
   semanticVersion: "1.0.0"
   isPrerelease: ${{ true }}
   isReleaseBranch: $[ or( eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-') ) ]
-  shouldDeploy: $[ eq( variables.isReleaseBranch, true ) ]
+  shouldDeploy: $[ and(false, eq( variables.isReleaseBranch, true )) ]
 
 jobs:
 - job:

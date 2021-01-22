@@ -29,6 +29,31 @@ function Test-SafeguardSession
 }
 
 
+<#
+.SYNOPSIS
+Get login credentials from Safeguard or locally if not available.
+
+.DESCRIPTION
+If connected to Safeguard (using Connect-Safeguard) this cmdlet will look for an open access request that 
+matches the provided network address. If found it will check-out the password and use that for login
+credentials. If not found then it will prompt the user for the credentials at the console.
+
+.PARAMETER NetworkAddress
+Name or network address of an existing asset in Safeguard for which there is an open access request.
+
+.PARAMETER AccountName
+Name of the account to match against open access requests in case there are more than one for the asset.
+
+.INPUTS
+None.
+
+.OUTPUTS
+System.Management.Automation.PSCredential.
+
+.EXAMPLE
+Get-SgDiscConnectionCredential Hyperv.test.env
+
+#>
 function Get-SgDiscConnectionCredential
 {
     [CmdletBinding()]

@@ -208,7 +208,7 @@ function Get-SgDiscPostgresAccount
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
                 Roles = @();
-                Description = "safeguard-discovery --"
+                Description = "safeguard-discovery"
             })
         }
 
@@ -222,7 +222,7 @@ function Get-SgDiscPostgresAccount
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
                 Roles = @($_.RoleName);
-                Description = ""
+                Description = "safeguard-discovery --"
             })
         }
     }

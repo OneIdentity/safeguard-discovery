@@ -177,7 +177,7 @@ function Get-SgDiscHpiLOAccount
 
     # convert results to an array and add the description
     $local:Results.Values | ForEach-Object {
-        $_.Description = "safeguard-discovery --"
+        $_.Description = "safeguard-discovery"
         $_
     }
 }

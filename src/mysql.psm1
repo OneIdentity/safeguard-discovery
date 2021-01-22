@@ -1,6 +1,6 @@
 $script:SqlAllUsers = "SELECT u.User AS AccountName FROM mysql.user u"
 $script:SqlExplicitGrantsWithInclusions = "SELECT u.User AS AccountName FROM mysql.user u where {0}"
-$script:SqlExplicitGrantsWithExclusions = "SELECT u.User AS AccountName FROM mysql.user u where not {0}"
+$script:SqlExplicitGrantsWithExclusions = "SELECT u.User AS AccountName FROM mysql.user u where {0}"
 
 
 $script:SqlServerPermissionsMap = @{
@@ -9,6 +9,7 @@ $script:SqlServerPermissionsMap = @{
     "Update_priv" = "Update rows"
     "Delete_priv" = "Delete rows"
     "Create_priv" = "Create databases, tables, or indexes"
+    "Create_user_priv" = "Create users"
     "Drop_priv" = "Drop databases, tables, or indexes"
     "Reload_priv" = "Flush or reset replication"
     "Shutdown_priv"   = "Shutdown or restart"
@@ -58,14 +59,13 @@ function Invoke-ThrowPermissionsException
 Discover privileged accounts in a SQL Server database.
 
 .DESCRIPTION
-This cmdlet may be used to discover privileged accounts in a Mysql database.  When
-called without arguments, the default behavior is to find local accounts that have that have been
-granted global permissions except Super_priv, Grant_priv.  The caller can
-override this behavior by specifying which directly granted permissions to exclude or include.
+This cmdlet may be used to discover privileged accounts in a Mysql database.  When called without arguments, the default behavior is 
+to find local accounts that have that have been granted global permissions including Create_priv, Create_tablespace_priv, 
+Create_user_priv, Grant_priv Process_priv, Reload_priv, Repl_client_priv, Repl_slave_priv, Shutdown_priv, Super_priv.  
+The caller can override this behavior by specifying which directly granted permissions to exclude or include.
 
-When a credential is not supplied to this cmdlet, it will automatically look for an open
-access request with a matching asset name or network address and use that access request
-to get the password to run the discovery.  If no access request is found, the cmdlet
+When a credential is not supplied to this cmdlet, it will automatically look for an open access request with a matching asset name or 
+network address and use that access request to get the password to run the discovery.  If no access request is found, the cmdlet
 will prompt for an account name and password to use.
 
 .PARAMETER NetworkAddress
@@ -109,7 +109,7 @@ function Get-SgDiscMysqlAccount
         [Parameter(Mandatory=$false,ParameterSetName="ExcludePerms")]
         [string[]]$ExcludePermissions,
         [Parameter(Mandatory=$false,ParameterSetName="IncludePerms")]
-        [string[]]$IncludePermissions = @("Super_priv", "Grant_priv")
+        [string[]]$IncludePermissions = @("Create_priv", "Create_tablespace_priv", "Create_user_priv", "Grant_priv", "Process_priv", "Reload_priv", "Repl_client_priv", "Repl_slave_priv", "Shutdown_priv", "Super_priv")
     )
 
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
@@ -144,7 +144,7 @@ function Get-SgDiscMysqlAccount
             {
                 Invoke-ThrowPermissionsException "Invalid permission inclusion '$($local:Perm)'"
             }
-            $local:PermInclusions += "'$($local:Perm)'"
+            $local:PermInclusions += "$($local:Perm) = 'Y'"
         }
         $local:Sql = ($script:SqlExplicitGrantsWithInclusions -f ($local:PermInclusions -join " or "))
     }
@@ -157,9 +157,9 @@ function Get-SgDiscMysqlAccount
             {
                 Invoke-ThrowPermissionsException "Invalid permission exclusion '$($local:Perm)'"
             }
-            $local:PermExclusions += "'$($local:Perm)'"
+            $local:PermExclusions += "$($local:Perm) = 'N'"
         }
-        $local:Sql = ($script:SqlExplicitGrantsWithExclusions -f ($local:PermExclusions -join " or not "))
+        $local:Sql = ($script:SqlExplicitGrantsWithExclusions -f ($local:PermExclusions -join " and "))
     }
     else 
     {
@@ -167,8 +167,6 @@ function Get-SgDiscMysqlAccount
     }
 
     # query to find matching permissions (this is filtered to local accounts)
-    "Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress"
-    Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress
     $local:PrivilegedAccountsFromPermissions = (Invoke-MysqlQuery -Sql $local:Sql -Credential $Credential -Server $NetworkAddress)
 
     #  process results
@@ -176,7 +174,7 @@ function Get-SgDiscMysqlAccount
     $local:PrivilegedAccountsFromPermissions | ForEach-Object {
             $local:Results[$_.AccountName] = New-Object PSObject -Property ([ordered]@{
                 AccountName = $_.AccountName;
-                Description = "safeguard-discovery --"
+                Description = "safeguard-discovery"
             })
         }
 

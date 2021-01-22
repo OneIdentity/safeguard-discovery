@@ -15,7 +15,7 @@ if (-not (Test-Path $TargetDir))
     Write-Host "Creating $TargetDir"
     New-Item -Path $TargetDir -ItemType Container -Force | Out-Null
 }
-$ModuleName = "safeguard-ps"
+$ModuleName = "safeguard-discovery"
 $Module = (Join-Path $PSScriptRoot "src\$ModuleName.psd1")
 
 $CodeVersion = "$($VersionString.Split(".")[0..1] -join ".").99999"

@@ -41,7 +41,7 @@ function Get-SgDiscConnectionCredential
 
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
     if (-not $PSBoundParameters.ContainsKey("Verbose")) { $VerbosePreference = $PSCmdlet.GetVariableValue("VerbosePreference") }
-
+    
     $local:Credential = $null
     if (Test-SafeguardSession)
     {
@@ -50,24 +50,27 @@ function Get-SgDiscConnectionCredential
             $NetworkAddress = (Read-Host "NetworkAddress")
         }
 
+        $local:Requests = Get-SafeguardMyRequest
         if ($AccountName)
         {
-            $local:Requests = (Get-SafeguardMyRequest | Where-Object {
-                ($_.AssetNetworkAddress -eq $NetworkAddress -or $_.AssetName -eq $NetworkAddress) -and $_.AccountName -eq $AccountName })
+            $local:Requests = $local:Requests | Where-Object {
+                ($_.AssetNetworkAddress -eq $NetworkAddress -or $_.AssetName -eq $NetworkAddress) -and $_.AccountName -eq $AccountName }
         }
         else
         {
-            $local:Requests = (Get-SafeguardMyRequest | Where-Object {
-                $_.AssetNetworkAddress -eq $NetworkAddress -or $_.AssetName -eq $NetworkAddress })
+            $local:Requests = $local:Requests | Where-Object {
+                $_.AssetNetworkAddress -eq $NetworkAddress -or $_.AssetName -eq $NetworkAddress }
         }
-        if ($local:Requests.Count -lt 1)
+        
+        $local:count = $local:Requests | Measure-Object
+        if ($local:count.Count -lt 1)
         {
             Write-Verbose "Unable to find an open access request with name or network address equal to '$NetworkAddress'"
             if ($AccountName) { Write-Verbose "Where account name also equals '$AccountName" }
         }
-        elseif ($local:Requests.Count -gt 1)
+        elseif ($local:count.Count -gt 1)
         {
-            Write-Verbose "Found $($local:Requests.Count) open access requests with name or network address equal to '$NetworkAddress'"
+            Write-Verbose "Found $($local:count.Count) open access requests with name or network address equal to '$NetworkAddress'"
             if ($AccountName) { Write-Verbose "Where account name also equals '$AccountName" }
         }
         else

@@ -12,7 +12,7 @@
 RootModule = 'safeguard-discovery.psm1'
 
 # Version number of this module.
-ModuleVersion = '99999.99999.99999'
+ModuleVersion = '1.0.99999'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

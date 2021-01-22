@@ -73,6 +73,22 @@ jobs:
         Get-PSRepository
     displayName: 'Ensure that PowerShell module loads'
     condition: succeeded()
+        
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(ModuleDir)\safeguard-discovery'
+      includeRootFolder: true 
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    displayName: 'Archiving Powershell module'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: 'SafeguardDiscoveryModule'
+    displayName: 'Publishing the artifacts'
+    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 
   - task: AzureKeyVault@1
     inputs:

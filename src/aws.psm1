@@ -13,9 +13,6 @@ will prompt for an Asset name and password to use.
 .PARAMETER Region
 The AWS region to query for instances
 
-.PARAMETER NetworkAddress
-NeworkAddress used to look up credentials from Safeguard if desired
-
 .PARAMETER Credential
 A PowerShell credential object that can be used to connect to the AWS server to
 execute the discovery job where UserName = AccessKey and Password = SecretKey
@@ -39,18 +36,15 @@ function Get-SgDiscAwsAsset
         [Parameter(Mandatory=$true,Position=0)]
         [string]$Region,
         [Parameter(Mandatory=$false)]
-        [string]$NetworkAddress,
-        [Parameter(Mandatory=$false)]
         [PSCredential]$Credential = $null
     )
 
     if (-not $PSBoundParameters.ContainsKey("ErrorAction")) { $ErrorActionPreference = "Stop" }
     if (-not $PSBoundParameters.ContainsKey("Verbose")) { $VerbosePreference = $PSCmdlet.GetVariableValue("VerbosePreference") }
 
-    if (-not $Credential)
+    if (-not $Credential) 
     {
-        # doing this here allows error action and verbose parameters to propagate
-        $Credential = (Get-SgDiscConnectionCredential $NetworkAddress)
+        $Credential = Get-Credential
     }
 
     # make sure Awspowershell is installed

@@ -1,27 +1,26 @@
-# which branch should trigger a build
+# https://aka.ms/yaml
+
 trigger:
   branches:
     include: [ master, release-* ]
 
 # Global Variables:
 #
-# semanticVersion.<generated build number> gets set in a variable called VersionString.
-#   VersionString is used to replace placeholders in assemblies and packages.
+# version.<generated build number> gets set in a variable called VersionString.
+#   VersionString is used to replace placeholders in module file.
 #
-# isPrerelease controls whether the release artifacts on GitHub and the Powershell module
-#   in the Powershell Gallery is marked as prerelease or not.
-#
-# isReleaseBranch controls whether packages will be generated and published.
+# isPrerelease controls whether the release artifacts on GitHub and the PowerShell module
+#   in the PowerShell Gallery is marked as prerelease or not.
 #
 variables:
-  semanticVersion: "1.0.0"
+  version: "1.0"
   isPrerelease: ${{ true }}
   isReleaseBranch: $[ or( eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-') ) ]
   shouldPublishModule: $[ eq( variables.isReleaseBranch, true ) ]
-  
+
 jobs:
 - job:
-  displayName: "Windows Powershell Build"
+  displayName: "Windows - PowerShell Gallery"
   pool:
     vmImage: 'windows-latest'
 
@@ -31,7 +30,7 @@ jobs:
       targetType: filePath
       failOnStderr: true
       filePath: $(System.DefaultWorkingDirectory)\versionnumber.ps1
-      arguments: $(Build.SourcesDirectory) $(semanticVersion) $(Build.BuildId)
+      arguments: $(version) $(Build.BuildId)
     displayName: 'Setting build version'
 
   - task: PowerShell@2
@@ -62,7 +61,8 @@ jobs:
       targetType: filePath
       filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(ModuleDir) $(VersionString) $$(isPrerelease)
-    displayName: 'Building Powershell module'
+    displayName: 'Building PowerShell module'
+    condition: succeeded()
 
   - task: PowerShell@2
     inputs:
@@ -73,22 +73,6 @@ jobs:
         Get-PSRepository
     displayName: 'Ensure that PowerShell module loads'
     condition: succeeded()
-        
-  - task: ArchiveFiles@2
-    inputs:
-      rootFolderOrFile: '$(ModuleDir)\safeguard-discovery'
-      includeRootFolder: true 
-      archiveType: 'zip'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    displayName: 'Archiving Powershell module'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'SafeguardDiscoveryModule'
-    displayName: 'Publishing the artifacts'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 
   - task: AzureKeyVault@1
     inputs:
@@ -109,21 +93,4 @@ jobs:
         Publish-Module -Name safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags -Force
     displayName: 'Publish PowerShell module to PowerShell Gallery'
     condition: and( succeeded(), eq( variables.shouldPublishModule, true ) )
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: 'github.ReleaseServiceAccount'
-      repositoryName: 'OneIdentity/safeguard-discovery'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      tagSource: 'manual'
-      tag: 'release-$(VersionString)'
-      title: '$(VersionString)'
-      isPreRelease: $(isPrerelease)
-      changeLogCompareToRelease: 'lastFullRelease'
-      changeLogType: 'commitBased'
-      assets: |
-        '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    displayName: 'Creating and publishing a release to Github'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
     

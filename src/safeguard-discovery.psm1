@@ -105,6 +105,33 @@ function Get-SgDiscConnectionCredential
     $local:Credential
 }
 
+<#
+.SYNOPSIS
+Import discovered accounts to an asset in Safeguard.
+
+.DESCRIPTION
+This cmdlet may be used to add accounts to an asset in Safeguard that were discovered using other cmdlets in this module.
+
+You must be connected to Safeguard using the Connect-Safeguard cmdlet before using this function. 
+
+.PARAMETER NetworkAddress
+Network address or name of an existing asset in Safeguard to add accounts to
+
+.PARAMETER DiscoveredAccounts
+Array of discovered accounts containing an AccountName and a Description to be imported to Safeguard.
+
+.INPUTS
+None.
+
+.OUTPUTS
+System.Management.Automation.PSObject.
+
+.EXAMPLE
+Get-SgDiscOracleAccount | Import-SgDiscDiscoveredAccount oracle.test.env
+
+.EXAMPLE
+Import-SgDiscDiscoveredAccount oracle.test.env $DiscoveredAccounts
+#>
 function Import-SgDiscDiscoveredAccount
 {
     [CmdletBinding()]
@@ -195,6 +222,33 @@ function Import-SgDiscDiscoveredAccount
 }
 
 
+<#
+.SYNOPSIS
+Import discovered assets to an asset partition in Safeguard.
+
+.DESCRIPTION
+This cmdlet may be used to add assets to an asset partition in Safeguard that were discovered using other cmdlets in this module.
+
+You must be connected to Safeguard using the Connect-Safeguard cmdlet before using this function. 
+
+.PARAMETER AssetPartition
+Name of an existing asset partition in Safeguard
+
+.PARAMETER DiscoveredAssets
+Array of discovered accounts containing an AccountName and a Description to be imported to Safeguard.
+
+.INPUTS
+None.
+
+.OUTPUTS
+System.Management.Automation.PSObject.
+
+.EXAMPLE
+Get-SgDiscHypervAsset Hyperv.test.env | Import-SgDiscDiscoveredAsset Macrocosm
+
+.EXAMPLE
+Import-SgDiscDiscoveredAsset Macrocosm $DiscoveredAssets
+#>
 function Import-SgDiscDiscoveredAsset
 {
     [CmdletBinding()]

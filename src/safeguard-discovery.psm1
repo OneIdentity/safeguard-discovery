@@ -357,7 +357,7 @@ function Import-SgDiscDiscoveredAsset
                 {
                     $local:Platform = 500 # Other
                 }
-                elseif ($_.OperatingSystem -like "Windows")
+                elseif ($_.OperatingSystem -like "*Windows*")
                 {
                     $local:Platform = 548 # Windows
                 }

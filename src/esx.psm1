@@ -68,7 +68,7 @@ function Get-SgDiscEsxAsset
     $local:systems = Get-VM -Server $local:server | ForEach-Object { Get-VMGuest -Server $local:server $_.Name }
     foreach ($local:system in $local:systems)
     {  
-        if ($null -ne $local:system.OSFullName)
+        if ($local:system.OSFullName)
         {
             $local:OS = $local:system.OSFullName
         } 
@@ -77,12 +77,22 @@ function Get-SgDiscEsxAsset
             $local:OS =  $local:system.ConfiguredGuestId
         }
 
+        $local:networkAddress = $null
+        if ($local:system.IPAddress)
+        {
+            $local:ipv4 = $local:system.IPAddress | ForEach-Object { [IpAddress] $_ } | Where-Object { $_.AddressFamily -eq 'InterNetwork'}
+            if ($local:ipv4)
+            {
+                $local:networkAddress = $local:ipv4[0]
+            }
+        }
+
         $local:Results += New-Object PSObject -Property ([ordered]@{
             AssetName = $local:system.VmName;
             State = $local:system.State
             OperatingSystem = $local:OS;
             HostName = $local:system.HostName;
-            IpAddress = $local:system.IPAddress;
+            IpAddress = $local:networkAddress;
             Description = "safeguard-discovery"
         })
     }

@@ -361,6 +361,10 @@ function Import-SgDiscDiscoveredAsset
                 {
                     $local:Platform = 548 # Windows
                 }
+                elseif ($_.OperatingSystem -like "*Mac*")
+                {
+                    $local:Platform = 525 # Mac
+                }
                 else
                 {
                     $local:Platform = 521 # Linux

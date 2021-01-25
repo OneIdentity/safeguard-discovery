@@ -333,7 +333,7 @@ function Import-SgDiscDiscoveredAsset
                     $local:Description = "safeguard-discovery -- no additional information"
                 }
 
-                if ($_.IpAddress -is [string])
+                if ($_.IpAddress -and $_.IpAddress -is [string])
                 {
                     $local:NetworkAddress = $_.IpAddress
                 }
@@ -357,7 +357,7 @@ function Import-SgDiscDiscoveredAsset
 
                 $CredentialType = "None" # No service account
                 
-                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description -Platform $local:Platform -ServiceAccountCredentialType $CredentialType)
+                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description -Platform $local:Platform -ServiceAccountCredentialType $CredentialType -NoSshHostKeyDiscovery)
                 New-Object PSObject -Property ([ordered]@{
                     Id = $local:Asset.Id
                     Name = $local:Asset.Name;

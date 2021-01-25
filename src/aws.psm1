@@ -5,11 +5,6 @@ Discover privileged Assets on an Aws server.
 .DESCRIPTION
 This cmdlet may be used to discover privileged Assets on an Aws server.
 
-When a credential is not supplied to this cmdlet, it will automatically look for an open
-access request with a matching asset name or network address and use that access request
-to get the password to run the discovery.  If no access request is found, the cmdlet
-will prompt for an Asset name and password to use.
-
 .PARAMETER Region
 The AWS region to query for instances
 

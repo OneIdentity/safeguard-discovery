@@ -57,8 +57,8 @@ specify `CurrentUser` when running the `Update-Module` cmdlet.
 
 ## Prerelease Versions
 
-To install a pre-release version of safeguard-discovery you need to use the latest version
-of PowerShellGet if you aren't already. Windows comes with one installed, but you
+To install a prerelease version of safeguard-discovery you need to use the latest version
+of PowerShellGet. Windows comes with one installed, but you
 want the newest and it requires the `-Force` parameter to get it.
 
 If you don't have PowerShellGet, run:
@@ -67,26 +67,26 @@ If you don't have PowerShellGet, run:
 > Install-Module PowerShellGet -Force
 ```
 
-Then, you can install a pre-release version of safeguard-discovery by running:
+Then, you can install a prerelease version of safeguard-discovery by running:
 
 ```Powershell
 > Install-Module -Name safeguard-discovery -AllowPrerelease
 ```
 
-## Pre-requisites
+## Prerequisites
 
 These cmdlets are integrated into Safeguard using the safeguard-ps module 
 [PowerShell Gallery](https://www.powershellgallery.com/packages/safeguard-discovery)
 
 Other modules may be necessary depending on which platforms you wish to discover accounts or assets on.
 
-AWS: Awspowershell [PowerShell Gallery](https://www.powershellgallery.com/packages/Awspowershell)
-Azure: Az [PowerShell Gallery](https://www.powershellgallery.com/packages/Az)
-ESX: VMware.VimAutomation.Core [PowerShell Gallery](https://www.powershellgallery.com/packages/VMware.VimAutomation.Core)
-HP ILO: HPEiLOCmdlets [PowerShell Gallery](https://www.powershellgallery.com/packages/HPEiLOCmdlets)
-Hyper-v: Enable Hyper-v powershell module using windows feature manager
-ServiceNow: ServiceNow [PowerShell Gallery](https://www.powershellgallery.com/packages/ServiceNow)
-Databases: InvokeQuery [PowerShell Gallery](https://www.powershellgallery.com/packages/InvokeQuery)
+- AWS: Awspowershell [PowerShell Gallery](https://www.powershellgallery.com/packages/Awspowershell)
+- Azure: Az [PowerShell Gallery](https://www.powershellgallery.com/packages/Az)
+- ESX: VMware.VimAutomation.Core [PowerShell Gallery](https://www.powershellgallery.com/packages/VMware.VimAutomation.Core)
+- HP ILO: HPEiLOCmdlets [PowerShell Gallery](https://www.powershellgallery.com/packages/HPEiLOCmdlets)
+- Hyper-v: Enable Hyper-v powershell module using windows feature manager
+- ServiceNow: ServiceNow [PowerShell Gallery](https://www.powershellgallery.com/packages/ServiceNow)
+- Databases: InvokeQuery [PowerShell Gallery](https://www.powershellgallery.com/packages/InvokeQuery)
 
 ## Safeguard Integration
 
@@ -157,7 +157,7 @@ you are communicating with.  The most important thing for safeguard-discovery is
 the version of the Safeguard Web API, which will never change between
 where only the third and fourth numbers differ.
 
-### Pre-release Builds
+### Prerelease Builds
 
 safeguard-discovery supports prerelease builds.  This is so the next version of
 safeguard-discovery can be developed in lock step with the Safeguard product.

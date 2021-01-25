@@ -61,7 +61,7 @@ function Get-SgDiscEsxAsset
         }
     }
 
-    Set-PowerCLIConfiguration -Confirm:$false -InvalidCertificateAction Ignore
+    (Set-PowerCLIConfiguration -Confirm:$false -InvalidCertificateAction Ignore) > $null
     $local:server = Connect-VIServer $NetworkAddress -Credential $Credential
 
     $local:Results = @()

@@ -256,7 +256,7 @@ function Get-SgDiscSqlServerAccount
                     PermissionClass = $_.PermissionClass;
                     PermissionState = $_.PermissionState
                 }));
-                Description = ""
+                Description = "safeguard-discovery"
             })
         }
     }
@@ -272,22 +272,10 @@ function Get-SgDiscSqlServerAccount
                 DefaultDatabaseName = $_.DefaultDatabaseName;
                 Roles = @($_.RoleName);
                 Permissions = @();
-                Description = ""
+                Description = "safeguard-discovery"
             })
         }
     }
 
-    # convert results to an array and add the description
-    $local:Results.Values | ForEach-Object {
-        $_.Description = "safeguard-discovery --"
-        if ($_.Roles)
-        {
-            $_.Description += " roles:" + ($_.Roles -join ",")
-        }
-        if ($_.Permissions)
-        {
-            $_.Description += " permissions:" + ($_.Permissions.PermissionName -join ",")
-        }
-        $_
-    }
+    $local:Results.Values
 }

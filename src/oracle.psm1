@@ -245,7 +245,7 @@ function Get-SgDiscOracleAccount
                 Permissions = @(New-Object PSObject -Property ([ordered]@{
                     PermissionName = $_.PermissionName;
                 }));
-                Description = "";
+                Description = "safeguard-discovery";
             })
         }
     }
@@ -260,22 +260,10 @@ function Get-SgDiscOracleAccount
                 AccountName = $_.AccountName;
                 Roles = @($_.RoleName);
                 Permissions = @();
-                Description = "";
+                Description = "safeguard-discovery";
             })
         }
     }
-
-    # convert results to an array and add the description
-    $local:Results.Values | ForEach-Object {
-        $_.Description = "safeguard-discovery --"
-        if ($_.Roles)
-        {
-            $_.Description += " roles:" + ($_.Roles -join ",")
-        }
-        if ($_.Permissions)
-        {
-            $_.Description += " permissions:" + ($_.Permissions.PermissionName -join ",")
-        }
-        $_
-    }
+    
+    $local:Results.Values
 }

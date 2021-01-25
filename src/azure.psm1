@@ -43,7 +43,7 @@ function Get-SgDiscAzureAsset
         }
     }
 
-    (Connect-AzAccount -Subscription $SubscriptionId) 2> $null
+    (Connect-AzAccount -Subscription $SubscriptionId) > $null
     
     $local:Results = @()
     $local:systems = Get-AzVM 

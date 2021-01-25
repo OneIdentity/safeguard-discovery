@@ -307,6 +307,7 @@ function Import-SgDiscDiscoveredAsset
     }
     process {
         $DiscoveredAssets | ForEach-Object {
+
             if (-not $_.AssetName)
             {
                 Write-Host -ForegroundColor Yellow ($_ | Out-String)
@@ -314,13 +315,14 @@ function Import-SgDiscDiscoveredAsset
             }
             try
             {
-                Write-Verbose "Checking for existence of '$($_.AssetName)'"
-                $local:Asset = (Get-SafeguardAsset $_.AssetName)
+                $local:AssetName = $_.AssetName.Replace("`"","")
+                Write-Verbose "Checking for existence of '$local:AssetName'"
+                $local:Asset = (Get-SafeguardAsset $local:AssetName)
             }
             catch {}
             if ($local:Asset)
             {
-                Write-Host -ForegroundColor Green "Discovered asset '$($_.AssetName)' already exists"
+                Write-Host -ForegroundColor Green "Discovered asset '$local:AssetName' already exists"
             }
             else
             {
@@ -333,13 +335,22 @@ function Import-SgDiscDiscoveredAsset
                     $local:Description = "safeguard-discovery -- no additional information"
                 }
 
-                if ($_.IpAddress -and $_.IpAddress -is [string])
+                if ($_.IpAddress)
                 {
-                    $local:NetworkAddress = $_.IpAddress
+                    $count = $_.IpAddress | Measure-Object
+
+                    if ($count.Count -eq 1)
+                    {
+                        $local:NetworkAddress = $_.IpAddress
+                    }
+                    elseif ($count.Count -gt 1)
+                    {
+                
+                    }
                 }
                 else
                 {
-                    $local:NetworkAddress = $_.AssetName
+                    $local:NetworkAddress = $local:AssetName
                 }
 
                 if (-not $_.OperatingSystem)
@@ -357,17 +368,24 @@ function Import-SgDiscDiscoveredAsset
 
                 $CredentialType = "None" # No service account
                 
-                $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $_.AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description -Platform $local:Platform -ServiceAccountCredentialType $CredentialType -NoSshHostKeyDiscovery)
-                New-Object PSObject -Property ([ordered]@{
-                    Id = $local:Asset.Id
-                    Name = $local:Asset.Name;
-                    Description = $local:Asset.Description;
-                    NetworkAddress = $local:Asset.NetworkAddress;
-                    AssetPartitionId = $local:Asset.AssetPartitionId;
-                    AssetPartitionName = $local:Asset.AssetPartitionName;
-                    PlatformId = $local:Asset.PlatformId;
-                    PlatformDisplayName = $local:Asset.PlatformDisplayName;
-                })
+                try
+                {
+                    $local:Asset = (New-SafeguardAsset -AssetPartitionId $local:AssetPartitions[0].Id -DisplayName $local:AssetName -NetworkAddress $local:NetworkAddress -Description $local:Description -Platform $local:Platform -ServiceAccountCredentialType $CredentialType -NoSshHostKeyDiscovery)
+                    New-Object PSObject -Property ([ordered]@{
+                        Id = $local:Asset.Id
+                        Name = $local:Asset.Name;
+                        Description = $local:Asset.Description;
+                        NetworkAddress = $local:Asset.NetworkAddress;
+                        AssetPartitionId = $local:Asset.AssetPartitionId;
+                        AssetPartitionName = $local:Asset.AssetPartitionName;
+                        PlatformId = $local:Asset.PlatformId;
+                        PlatformDisplayName = $local:Asset.PlatformDisplayName;
+                    })
+                } 
+                catch 
+                {
+                    throw "Failed to add discovered asset '$local:AssetName' to Safeguard. Reason: $_.Message"
+                }
             }
             $local:Asset = $null
         }

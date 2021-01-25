@@ -77,7 +77,7 @@ function Get-SgDiscServiceNowAsset
         foreach ($local:computer in $local:computers)
         { 
             $local:Results += New-Object PSObject -Property ([ordered]@{
-                AssetName = $local:computer.name;
+                AssetName = $local:computer.asset.display_value;
                 State = "$($local:computer.operational_status)";
                 OperatingSystem = "$($local:computer.os) $($local:computer.os_version)";
                 HostName = $null;

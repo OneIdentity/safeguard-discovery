@@ -188,7 +188,6 @@ update this list.
 - Get-SgDiscIDracAccount
 - Get-SgDiscMysqlAccount
 - Get-SgDiscOracleAccount
-- Get-SgDiscOracleAccount
 - Get-SgDiscPostgresAccount
 - Get-SgDiscSqlServerAccount
 

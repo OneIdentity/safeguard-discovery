@@ -75,7 +75,7 @@ Then, you can install a prerelease version of safeguard-discovery by running:
 ## Prerequisites
 
 These cmdlets are integrated into Safeguard using the safeguard-ps module
-[PowerShell Gallery](https://www.powershellgallery.com/packages/safeguard-discovery)
+[PowerShell Gallery](https://www.powershellgallery.com/packages/safeguard-ps)
 
 The safeguard-ps module is not required if you just want to discover assets or accounts but not import them into Safeguard.
 
@@ -88,6 +88,8 @@ Other PowerShell modules are required depending on which platforms you wish to d
 - Hyper-v: Enable Hyper-v powershell module using windows feature manager
 - ServiceNow: ServiceNow [PowerShell Gallery](https://www.powershellgallery.com/packages/ServiceNow)
 - Databases: InvokeQuery [PowerShell Gallery](https://www.powershellgallery.com/packages/InvokeQuery)
+
+As a convenience, these dependencies can be installed using the `Install-SgDiscDependencies` cmdlet and uninstalled using the `Uninstall-SgDiscDependencies` cmdlet.
 
 ## Safeguard Integration
 
@@ -113,11 +115,11 @@ at least an AccountName and Description. Discovered assets are PSObjects that ha
 For example:
 
 ```Powershell
-> Import-SgDiscDiscoveredAccount <AssetName> $DiscoveredAccounts
+> Import-SgDiscDiscoveredAccount <NetworkAddress> $DiscoveredAccounts
 ```
 
 ```Powershell
-> Import-SgDiscDiscoveredAsset <AssetPartitionName> $DiscoveredAssets
+> Import-SgDiscDiscoveredAsset <AssetPartition> $DiscoveredAssets
 ```
 
 ## Discover Available cmdlets
@@ -171,13 +173,6 @@ additional information as to how it can be called.
 
 Please file GitHub Issues for cmdlets that are not working and to request
 cmdlets for functionality that is missing.
-
-The following list of cmdlets might not be complete.  To see everything that
-safeguard-discovery can do run:
-
-```Powershell
-> Get-Command -Module safeguard-discovery
-```
 
 Please report anything you see from the output that is missing, and we will
 update this list.

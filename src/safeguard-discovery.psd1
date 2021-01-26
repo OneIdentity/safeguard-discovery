@@ -80,13 +80,18 @@ NestedModules = @(
      'servicenow.psm1',
      'azure.psm1',
      'hyperv.psm1',
-     'aws.psm1'
+     'aws.psm1',
+     'dependencies.psm1'
 )
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
     # safeguard-discovery.psm1 -- handles fetching credentials and importing discovered assets/accounts
     'Get-SgDiscConnectionCredential','Import-SgDiscDiscoveredAccount','Import-SgDiscDiscoveredAsset',
+
+    # dependencies.psm1
+    'Install-SgDiscDependencies',
+    'Uninstall-SgDiscDependencies',
 
     # platform-specific modules
     # sqlserver.psm1

@@ -1,6 +1,5 @@
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/safeguard-ps.svg)](https://www.powershellgallery.com/packages/safeguard-discovery)
-[![Docker Hub](https://img.shields.io/badge/docker-oneidentity%2Fsafeguard--ps-blue.svg)](https://hub.docker.com/r/oneidentity/safeguard-discovery/)
-[![GitHub](https://img.shields.io/github/license/OneIdentity/safeguard-ps.svg)](https://github.com/OneIdentity/safeguard-discovery/blob/master/LICENSE)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/safeguard-discovery.svg)](https://www.powershellgallery.com/packages/safeguard-discovery)
+[![GitHub](https://img.shields.io/github/license/OneIdentity/safeguard-discovery.svg)](https://github.com/OneIdentity/safeguard-discovery/blob/master/LICENSE)
 
 # safeguard-discovery
 
@@ -75,10 +74,12 @@ Then, you can install a prerelease version of safeguard-discovery by running:
 
 ## Prerequisites
 
-These cmdlets are integrated into Safeguard using the safeguard-ps module 
+These cmdlets are integrated into Safeguard using the safeguard-ps module
 [PowerShell Gallery](https://www.powershellgallery.com/packages/safeguard-discovery)
 
-Other modules may be necessary depending on which platforms you wish to discover accounts or assets on.
+The safeguard-ps module is not required if you just want to discover assets or accounts but not import them into Safeguard.
+
+Other PowerShell modules are required depending on which platforms you wish to discover assets or accounts on.
 
 - AWS: Awspowershell [PowerShell Gallery](https://www.powershellgallery.com/packages/Awspowershell)
 - Azure: Az [PowerShell Gallery](https://www.powershellgallery.com/packages/Az)
@@ -93,8 +94,8 @@ Other modules may be necessary depending on which platforms you wish to discover
 Once you have loaded the module, you must first connect to Safeguard using the
 `Connect-Safeguard` cmdlet.  See [safeguard-ps](https://github.com/OneIdentity/safeguard-ps) for more information.
 
-If the login credentials for the target machine are stored in Safeguard then first create an access request for those credentials from the Safeguard console. 
-Once the access request is approved then you can use the `Get-SgDiscConnectionCredential` cmdlet to automatically check-out the password. 
+If the login credentials for the target machine are stored in Safeguard then first create an access request for those credentials from the Safeguard console.
+Once the access request is approved then you can use the `Get-SgDiscConnectionCredential` cmdlet to automatically check-out the password.
 
 For example:
 
@@ -106,7 +107,7 @@ If an approved access request is discovered for an account belonging to the spec
 If an approved access request is not found then the user will be prompted to enter the credentials manually.
 
 Accounts and assets discovered using the provided cmdlets can be imported into Safeguard. Use `Import-SgDiscDiscoveredAccount` to import accounts into an existing
-asset in Safeguard. Use `Import-SgDiscDiscoveredAsset` to import assets into an existing asset partition in Safeguard. Discovered accounts are PSObjects that have 
+asset in Safeguard. Use `Import-SgDiscDiscoveredAsset` to import assets into an existing asset partition in Safeguard. Discovered accounts are PSObjects that have
 at least an AccountName and Description. Discovered assets are PSObjects that have at least an AssetName, Description, IpAddress, and OperationSystem.
 
 For example:
@@ -186,8 +187,8 @@ update this list.
 - Get-SgDiscHpiLOAccount
 - Get-SgDiscIDracAccount
 - Get-SgDiscMysqlAccount
-- Get-SgDiscOracleAccount    
-- Get-SgDiscOracleAccount  
+- Get-SgDiscOracleAccount
+- Get-SgDiscOracleAccount
 - Get-SgDiscPostgresAccount
 - Get-SgDiscSqlServerAccount
 
@@ -202,5 +203,5 @@ update this list.
 ### Safeguard Integration
 
 - Get-SgDiscConnectionCredential
-- Import-SgDiscDiscoveredAccount 
+- Import-SgDiscDiscoveredAccount
 - Import-SgDiscDiscoveredAsset

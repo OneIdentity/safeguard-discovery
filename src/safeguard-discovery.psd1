@@ -155,23 +155,23 @@ PrivateData = @{
         Tags = @('OneIdentity', 'Safeguard', 'Powershell', 'CLI', 'DevOps')
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/OneIdentity/SafeguardDevOpsService/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/OneIdentity/safeguard-discovery/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/OneIdentity/SafeguardDevOpsService'
+        ProjectUri = 'https://github.com/OneIdentity/safeguard-discovery'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://raw.githubusercontent.com/OneIdentity/SafeguardDevOpsService/master/SafeguardLogo.ico'
+        IconUri = 'https://raw.githubusercontent.com/OneIdentity/safeguard-discovery/master/SafeguardLogo.ico'
 
         # List of external modules that this module is dependent upon.
-        ExternalModuleDependencies = @('safeguard-ps','InvokeQuery')
+        ExternalModuleDependencies = @('safeguard-ps', 'InvokeQuery', 'Awspowershell', 'Az', 'VMware.VimAutomation.Core', 'HPEiLOCmdlets', 'ServiceNow')
 
         # Pre-release tag
         Prerelease = '-pre'
 
         # ReleaseNotes of this module
         ReleaseNotes = @"
-safeguard-discovery 0.1 Release Notes:
+safeguard-discovery 1.0 Release Notes:
 
 - initial beta version
 "@

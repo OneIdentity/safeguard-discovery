@@ -109,19 +109,3 @@ jobs:
         Publish-Module -Name safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags -Force
     displayName: 'Publish PowerShell module to PowerShell Gallery'
     condition: and( succeeded(), eq( variables.shouldPublishModule, true ) )
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: 'github.ReleaseServiceAccount'
-      repositoryName: 'OneIdentity/safeguard-discovery'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      title: '$(VersionString)'
-      isPreRelease: $(isPrerelease)
-      changeLogCompareToRelease: 'lastFullRelease'
-      changeLogType: 'commitBased'
-      assets: |
-        '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    displayName: 'Creating and publishing a release to Github'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
-    

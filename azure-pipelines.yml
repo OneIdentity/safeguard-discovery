@@ -116,8 +116,6 @@ jobs:
       repositoryName: 'OneIdentity/safeguard-discovery'
       action: 'create'
       target: '$(Build.SourceVersion)'
-      tagSource: 'userSpecifiedTag'
-      tag: 'release-$(VersionString)'
       title: '$(VersionString)'
       isPreRelease: $(isPrerelease)
       changeLogCompareToRelease: 'lastFullRelease'

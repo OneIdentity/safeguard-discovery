@@ -62,8 +62,14 @@ function Get-SgDiscAwsAsset
     $local:systems = Get-EC2Instance | ForEach-Object { $_.Instances }
     foreach ($local:system in $local:systems)
     {  
+        $local:name = $local:system.Tag | Where-Object { $_.Key -eq 'Name'} | Select-Object -ExpandProperty Value
+        if (-not $local:name)
+        {
+            $local:name = $local:system.InstanceId
+        }
+
         $local:Results += New-Object PSObject -Property ([ordered]@{
-            AssetName = $local:system.KeyName;
+            AssetName = $local:name;
             State = $local:system.State.Name;
             OperatingSystem = $local:system.Platform;
             HostName = $local:system.PublicDnsName;

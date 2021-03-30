@@ -15,4 +15,4 @@ jobs:
     pool:
       vmImage: 'windows-latest'
     steps:
-      - template: pipeline-templates/build-windows-steps.yml
+      - template: pipeline-templates/build-steps.yml

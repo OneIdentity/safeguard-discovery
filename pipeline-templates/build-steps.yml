@@ -1,30 +1,4 @@
-# https://aka.ms/yaml
-
-trigger:
-  branches:
-    include: [ master, release-* ]
-
-# Global Variables:
-#
-# version.<generated build number> gets set in a variable called VersionString.
-#   VersionString is used to replace placeholders in module file.
-#
-# isPrerelease controls whether the release artifacts on GitHub and the PowerShell module
-#   in the PowerShell Gallery is marked as prerelease or not.
-#
-variables:
-  version: "1.0"
-  isPrerelease: ${{ true }}
-  isReleaseBranch: $[ or( eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release-') ) ]
-  shouldPublishModule: $[ eq( variables.isReleaseBranch, true ) ]
-
-jobs:
-- job:
-  displayName: "Windows - PowerShell Gallery"
-  pool:
-    vmImage: 'windows-latest'
-
-  steps:
+steps:
   - task: PowerShell@2
     inputs:
       targetType: filePath
@@ -48,7 +22,6 @@ jobs:
         Write-Host "ModuleDir = $($local:TargetDir)"
         Write-Output "##vso[task.setvariable variable=ModuleDir;]$($local:TargetDir)"
     displayName: 'Find PowerShell module path'
-    condition: succeeded()
 
   - task: Bash@3
     inputs:
@@ -62,7 +35,6 @@ jobs:
       filePath: $(System.DefaultWorkingDirectory)\install-forpipeline.ps1
       arguments: $(ModuleDir) $(VersionString) $$(isPrerelease)
     displayName: 'Building PowerShell module'
-    condition: succeeded()
 
   - task: PowerShell@2
     inputs:
@@ -72,40 +44,17 @@ jobs:
         Import-Module -Name safeguard-discovery -Verbose
         Get-PSRepository
     displayName: 'Ensure that PowerShell module loads'
-    condition: succeeded()
-        
+
   - task: ArchiveFiles@2
     inputs:
       rootFolderOrFile: '$(ModuleDir)\safeguard-discovery'
-      includeRootFolder: true 
+      includeRootFolder: true
       archiveType: 'zip'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     displayName: 'Archiving Powershell module'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: 'SafeguardDiscoveryModule'
     displayName: 'Publishing the artifacts'
-    condition: and(succeeded(), eq(variables.isReleaseBranch, true))
-
-  - task: AzureKeyVault@1
-    inputs:
-      azureSubscription: 'OneIdentity.RD.SBox.Safeguard-ServiceConnection'
-      KeyVaultName: 'SafeguardBuildSecrets'
-      SecretsFilter: 'PowerShellGalleryApiKey'
-    displayName: 'Get PowerShell Gallery API key from Sandbox Azure Key Vault'
-    condition: and( succeeded(), eq( variables.shouldPublishModule, true ) )
-
-  - task: PowerShell@2
-    inputs:
-      targetType: inline
-      failOnStderr: true
-      script: |
-        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
-        Install-PackageProvider Nuget –Force
-        Get-PSRepository
-        Publish-Module -Name safeguard-discovery -NuGetApiKey "$(PowerShellGalleryApiKey)" -Verbose -SkipAutomaticTags -Force
-    displayName: 'Publish PowerShell module to PowerShell Gallery'
-    condition: and( succeeded(), eq( variables.shouldPublishModule, true ) )

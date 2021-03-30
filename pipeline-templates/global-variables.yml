@@ -1,0 +1,5 @@
+variables:
+  - name: version
+    value: "1.0"
+  - name: isPrerelease
+    value: ${{ true }}

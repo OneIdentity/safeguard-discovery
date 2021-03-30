@@ -1,0 +1,18 @@
+variables:
+  - template: pipeline-templates/global-variables.yml
+trigger: none
+pr:
+  branches:
+    include:
+      - master
+      - release-*
+  paths:
+    exclude:
+      - README.md
+jobs:
+  - job: Build
+    displayName: "Build PowerShell module"
+    pool:
+      vmImage: 'windows-latest'
+    steps:
+      - template: pipeline-templates/build-steps.yml

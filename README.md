@@ -179,7 +179,7 @@ PowerShell development can be done many ways, this is just one way with Visual S
 * Create or modify the scripts, and save the changes.
 
 ### Executing
-* Open a New Terminal and execute the following.
+* Open a Terminal in Visual Studio Code and execute the following.
   
   If you have installed the safeguard-discovery module uninstall it. 
   ```
@@ -192,7 +192,7 @@ PowerShell development can be done many ways, this is just one way with Visual S
   ```
 * Test your changes
   
-  Before testing any new changes you must run `Remove-Module safeguard-discovery` and `./install-local.ps1`.
+  Before testing any new changes you must run `Remove-Module safeguard-discovery` and `install-local.ps1`.
 
 ## Powershell cmdlets
 

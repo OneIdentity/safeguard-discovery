@@ -5,7 +5,7 @@
 
 One Identity Safeguard Discovery Powershell module and scripting resources.
 
-NOTE: All of these platforms with the exception of ESX and HyperV have been integrated directly into Safeguard. Consider using safeguard-ps (https://github.com/oneidentity/safeguard-ps)
+NOTE: All of the account discovery cmdlets have been integrated directly into Safeguard. Consider using safeguard-ps (https://github.com/oneidentity/safeguard-ps)
 
 -----------
 

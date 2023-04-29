@@ -61,7 +61,7 @@ function Get-SgDiscServiceNowAsset
         }
     }
 
-    if (-not (Set-ServiceNowAuth -url $NetworkAddress  -Credential $Credential))
+    if (-not (Set-ServiceNowSession -url $NetworkAddress  -Credential $Credential))
     {
         throw "Could not connect to ServiceNow"
     }
@@ -73,7 +73,7 @@ function Get-SgDiscServiceNowAsset
     do 
     {
         $skip = 0
-        $local:computers = Get-ServiceNowTableEntry -Table 'cmdb_ci_computer' -Skip $skip -First $limit
+        $local:computers = Get-ServiceNowRecord -Table 'cmdb_ci_computer' -Skip $skip -First $limit
         foreach ($local:computer in $local:computers)
         { 
             $local:Results += New-Object PSObject -Property ([ordered]@{
@@ -92,7 +92,7 @@ function Get-SgDiscServiceNowAsset
     do 
     {
         $skip = 0
-        $local:assets = Get-ServiceNowTableEntry -Table 'alm_asset' -Skip $skip -First $limit 
+        $local:assets = Get-ServiceNowRecord -Table 'alm_asset' -Skip $skip -First $limit 
         $local:computers = $local:assets | Where-Object{ $_.sys_class_name -eq 'Hardware' }
         foreach ($local:computer in $local:computers)
         { 

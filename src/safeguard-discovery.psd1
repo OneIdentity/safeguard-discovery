@@ -167,7 +167,7 @@ PrivateData = @{
         ExternalModuleDependencies = @('safeguard-ps', 'InvokeQuery', 'Awspowershell', 'Az', 'VMware.VimAutomation.Core', 'HPEiLOCmdlets', 'ServiceNow')
 
         # Pre-release tag
-        Prerelease = '-pre'
+        Prerelease = 'pre'
 
         # ReleaseNotes of this module
         ReleaseNotes = @"
